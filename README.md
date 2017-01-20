@@ -1,19 +1,23 @@
-## Advanced Lane Finding
+## Advanced Lane Lines Project
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-The goals / steps of this project are the following:  
+The purpose of this project is to develop a pipeline which can highlight the subject vehicle's lane in the [project_video.mp4](./project_video.mp4) provided as part of this project and generate a new video, which I called [output.mp4](./output.mp4). This project is similar to the first lane finding project (Project 1 in the SDC Nanodegree), but notable differences include:
 
-* Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
+* Highlighting the entire lane rather than just the left and right lane markers
+* Robut lane detection in areas of changing pavement colors and shadows
+* Calculation and display of lane curvature and vehicle lateral offset
+
+To implement the pipeline, I took the following steps:
+
+* Computed the camera calibration matrix and distortion coefficients using given a set of chessboard images.
 * Apply the distortion correction to the raw image.  
-* Use color transforms, gradients, etc., to create a thresholded binary image.
+* Use color transforms and gradients to create a thresholded binary image.
 * Apply a perspective transform to rectify binary image ("birds-eye view"). 
-* Detect lane pixels and fit to find lane boundary.
-* Determine curvature of the lane and vehicle position with respect to center.
-* Warp the detected lane boundaries back onto the original image.
-* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+* Detect left and right lane pixels individually and fit each to 2nd order polynomial.
+* Use left and right polynomials to determine curvature of the lane and vehicle position with respect to center.
+* If the polynimial fit returns a bad result, use fit from prior frame to improve result
+* Smooth noisy curvature calculations using several frames worth of detections
+* Warp a polygon which fills the detected lane boundaries back onto the original image.
+* Print numerical estimation of lane curvature and vehicle position with respect to center in each frame.
 
----
-
-The images for camera calibration are stored in the folder called `camera_cal`.  The images in `test_images` are for testing your pipeline on single frames.  The video called `project_video.mp4` is the video your pipeline should work well on.  `challenge_video.mp4` is an extra (and optional) challenge for you if you want to test your pipeline.
-
-If you're feeling ambitious (totally optional though), don't stop there!  We encourage you to go out and take video of your own, calibrate your camera and show us how you would implement this project from scratch!
+Further details of my pipeline are included in [advanced_lane_lines.ipynb](./advanced_lane_lines.ipynb). Although this pipeline is fairly robust, there are aspects that could be improved. First, various thresholds are used throughout the pipeline which are handtuned to produce a good result on the [project_video.mp4](./project_video.mp4) input. An automated threshold selection method could almost certainly produce (at least slightly) better results. Second, tuning the thresholds on a larger dataset would further improve robustness. Third, in order to produce a smooth curvature value, several "raw curvature" values are used from past measurements/frames. If there is a sudden change in curvature, this method of filtering would lead to a delay in the reported value for "current curvature"
